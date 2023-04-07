@@ -96,24 +96,38 @@ exports.getOneUpdate = async (req, res) => {
 }
 
 
-//Sort Limit Search .......................................................................
-
+//Sort Limit Search .........................................................................
 
 exports.sortSearch = (async (req, res) => {
 
     try {
 
-
         let { query, page, limit, sortBy, sortType } = req.body
         page = page ? page : 1
-        limit = limit ? limit : 2
+        limit = limit ? limit : 5
         sortBy = sortBy ? sortBy : 'name'
         sortType = sortType ? sortType : 'ASC'
 
+        const params = ["name",
+            "email",
+            "mobileNumber",
+            "whatsapp",
+            "gender",
+            "dob",
+            "address",
+            "workingExperience",
+            "company"]
+
         let searchNameQuerry = []
-        let key = ["name"]
-        let value = { $regex: `.*${query}.*`, $options: "i" }
-        searchNameQuerry.push({ [key]: value })
+        for (let each in params) {
+            let key = params[each]
+            let value = { $regex: `.*${query}.*`, $options: "i" }
+            console.log("query", query)
+            console.log("value", value)
+
+            searchNameQuerry.push({ [key]: value })
+            console.log(searchNameQuerry)
+        }
 
         let students = await student.aggregate([
             { $match: { $or: searchNameQuerry } },
@@ -146,8 +160,8 @@ exports.filter = async (req, res) => {
             {
                 $match: {
                     $and: [
-                        { coursename: { $in: courses } },
-                         { fees: { $lt: "min", $gt:" max" } }
+                        { coursename: { $in: [courses] } },
+                        { fees: { $lt: "min", $gt: " max" } }
                     ]
                 }
             }
